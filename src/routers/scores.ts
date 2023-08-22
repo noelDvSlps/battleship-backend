@@ -1,5 +1,5 @@
-import { NextFunction, Router } from "express";
-import { number, z } from "zod";
+import { Router } from "express";
+import { z } from "zod";
 import { validateRequest } from "zod-express-middleware";
 import { prisma } from "../prisma";
 import {

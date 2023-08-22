@@ -1,9 +1,8 @@
-import { NextFunction, Router } from "express";
+import { Router } from "express";
 import { z } from "zod";
 import { validateRequest } from "zod-express-middleware";
 import { prisma } from "../prisma";
 import {
-  createTokenForApp,
   encryptPassword,
   createUnsecuredUserInformation,
   createTokenForUser,
@@ -68,6 +67,35 @@ usersRouter.post(
     const userInformation = createUnsecuredUserInformation(user);
     const token = createTokenForUser(user);
     return res.status(200).json({ token, userInformation });
+  }
+);
+
+usersRouter.post(
+  "/register/",
+  validateRequest({
+    body: z.object({
+      username: z.string({
+        errorMap: (err) => ({
+          message: "name is required and must be a string",
+        }),
+      }),
+      password: z.string(),
+    }),
+  }),
+  async (req, res) => {
+    try {
+      const hashedPassword = await encryptPassword(req.body.password);
+      const newUser = await prisma.user.create({
+        data: {
+          ...req.body,
+          password: hashedPassword,
+        },
+      });
+      res.status(201).send(newUser);
+    } catch (e) {
+      console.log(e);
+      res.status(500);
+    }
   }
 );
 
