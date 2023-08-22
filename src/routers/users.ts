@@ -74,11 +74,18 @@ usersRouter.post(
   "/register/",
   validateRequest({
     body: z.object({
-      username: z.string({
-        errorMap: (err) => ({
-          message: "name is required and must be a string",
+      username: z
+        .string({
+          errorMap: (err) => ({
+            message: "username is required and must be a string",
+          }),
+        })
+        .min(4, {
+          message: "username should be greater than 3 characters",
+        })
+        .max(20, {
+          message: "username should be less than 21 characters",
         }),
-      }),
       password: z.string(),
     }),
   }),
