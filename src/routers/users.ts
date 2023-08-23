@@ -6,8 +6,10 @@ import {
   encryptPassword,
   createUnsecuredUserInformation,
   createTokenForUser,
+  authMiddleware,
 } from "../auth-utils";
 import bcrypt from "bcrypt";
+import { Prisma } from "@prisma/client";
 
 const usersRouter = Router();
 
@@ -111,8 +113,17 @@ usersRouter.post(
       });
       res.status(201).send(newUser);
     } catch (e) {
-      console.log(e);
-      res.status(500);
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          const target = e.meta?.target;
+          res.status(500).send({
+            error: `There is a unique constraint violation, a new user cannot be created with this ${target}`,
+          });
+          return;
+        }
+      }
+      res.status(500).send(e);
     }
   }
 );

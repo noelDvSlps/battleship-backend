@@ -2,11 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { validateRequest } from "zod-express-middleware";
 import { prisma } from "../prisma";
-import {
-  authMiddleware,
-  createTokenForApp,
-  encryptPassword,
-} from "../auth-utils";
+import { authMiddleware } from "../auth-utils";
 
 const scoresRouter = Router();
 
