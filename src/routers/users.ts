@@ -86,7 +86,18 @@ usersRouter.post(
         .max(20, {
           message: "username should be less than 21 characters",
         }),
-      password: z.string(),
+      password: z
+        .string({
+          errorMap: (err) => ({
+            message: "password is required and must be a string",
+          }),
+        })
+        .min(4, {
+          message: "password should be greater than 3 characters",
+        })
+        .max(20, {
+          message: "password should be less than 21 characters",
+        }),
     }),
   }),
   async (req, res) => {
